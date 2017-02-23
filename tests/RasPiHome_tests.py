@@ -1,3 +1,5 @@
 from .context import spi_reader
 
-print spi_reader.readChannel(0)
+while True:
+    print "Channel 0", spi_reader.readChannel(0)
+    print "Channel 1", spi_reader.readChannel(1)
