@@ -1,17 +1,14 @@
 import spidev
-import time
 
-spi = spidev.SpiDev()
-spi.open(0,0)
 
-try:
-    while True:
-        data = spi.xfer2([ 6, 0, 0])
-        time.sleep(0.1)
+def readChannel(channel):
+    spi = spidev.SpiDev()
+    spi.open(0,0)
 
-        value = (data[0] << 6) + data[1]
+    try:
 
-        print "Ausgelesener Wert: ", value
+        data = spi.xfer2([ 6, channel << 6, 0])
+        return (((data[1] & 15 ) << 8) + data[2])
 
-finally:
-    spi.close()
+    finally:
+        spi.close()
