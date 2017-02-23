@@ -1,4 +1,6 @@
-from .context import spi_reader
+from .context import RasPiHome
+from RasPiHome import spi_reader
+
 
 while True:
     print "Channel 0", spi_reader.readChannel(0)
