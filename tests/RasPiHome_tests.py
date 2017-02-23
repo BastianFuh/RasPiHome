@@ -1,3 +1,3 @@
-from .context import RasPiHome
+from .context import spi_reader
 
-RasPi
+print spi_reader.readChannel(0)
