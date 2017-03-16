@@ -1,7 +1,7 @@
 
 ###
 #
-# Library for the communication
+# Constants used for the communication
 #
 # Ranges
 #   Sensors         0x00 - 0x6F
@@ -11,7 +11,13 @@
 ###
 
 
-### -- Sensors -- ###
+##
+#
+# Const for the Discovery Process
+#
+##
+
+# -- Sensors -- #
 
 SENSOR_TEMPERATURE      = 0x00
 SENSOR_TEMP             = 0x00
@@ -24,8 +30,7 @@ SENSOR_LIGHT            = 0x02
 SENSOR_COLOR            = 0x03
 
 
-
-### -- Actuators -- ###
+# -- Actuators -- #
 
 ACTR_SERVO              = 0x70
 ACTR_PELTIER            = 0x71
@@ -33,7 +38,7 @@ ACTR_LED                = 0x72
 ACTR_SIREN              = 0x73
 
 
-### -- Miscellaneous -- ###
+# -- Predefined PORTS -- #
 
-
-DEBUG                   = 0xFF
+PORT_DEBUG              = 0xFE
+PORT_DISCOVERY          = 0xFF
