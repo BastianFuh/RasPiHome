@@ -15,14 +15,12 @@ state = 0
 
 while True:
     time.sleep(5)
-    # i2c.writeData(addr, libCom.DEBUG, [256,157,755, 196])
 
-    print "Temperature ", i2c.readData(addr, 0x01)
-    print "Humidity ", i2c.readData(addr, 0x02)
-    light = i2c.readData(addr, 0x03)
+    print "Temperature ", i2c.readSensor(addr, 0x10)
+    print "Humidity ", i2c.readSensor(addr, 0x25)
+    light = i2c.readSensor(addr, 0x30)
 
     print "Light: ", light
-
 
     if light > 700 and state == 1 and light != -1:
         print "Open Door"

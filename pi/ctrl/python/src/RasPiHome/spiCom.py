@@ -2,10 +2,11 @@ import spidev
 import RPi.GPIO as GPIO
 
 # reads the data from a MCP3204 ic over the spi Interface
-def read(channel):
-    
 
-spi = spidev.SpiDev()
+
+def read(channel):
+
+    spi = spidev.SpiDev()
     spi.open(0,0)
 
     try:
@@ -24,18 +25,18 @@ spi = spidev.SpiDev()
         # second byte = [D1][D0]XX XXXX
         #   D1 and D0 are used to select the channel to read from
         #
-	data_send = [6,channel, 0]
-	print "Send Data: ", data_send
+        data_send = [6, channel, 0]
+        print "Send Data: ", data_send
+
         data = spi.xfer(data_send)
-	
-	print "Recv Data: ", data
+        print "Recv Data: ", data
 
         #
         # X = not important
         # ? = data
         # returned data = [XXXX XXXX] [XXXX ????] [???? ????]
         #
-        return (((data[1] & 15 ) << 8) + data[2])
+        return ((data[1] & 15) << 8) + data[2]
 
     finally:
         spi.close()

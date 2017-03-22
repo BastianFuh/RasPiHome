@@ -19,15 +19,15 @@
 
 # -- Sensors -- #
 
-SENSOR_TEMPERATURE      = 0x00
-SENSOR_TEMP             = 0x00
+SENSOR_TEMPERATURE      = 0x01
+SENSOR_TEMP             = 0x01
 
-SENSOR_HUMIDITY         = 0x01
-SENSOR_HUM              = 0x01
+SENSOR_HUMIDITY         = 0x02
+SENSOR_HUM              = 0x02
 
-SENSOR_LIGHT            = 0x02
+SENSOR_LIGHT            = 0x03
 
-SENSOR_COLOR            = 0x03
+SENSOR_COLOR            = 0x04
 
 
 # -- Actuators -- #

@@ -1,7 +1,10 @@
+
 #include <MemoryFree.h>
 #include <Wire.h>
 #include <DHT.h>
 #include <Servo.h>
+
+
 
 
 
@@ -36,9 +39,9 @@
 
 // Ports
 
-#define TEMP 0x01
-#define HUM 0x02
-#define LIGHT 0x03
+#define TEMP 0x10
+#define HUM 0x25
+#define LIGHT 0x45
 
 #define SERVO 0x0C
 
@@ -67,15 +70,20 @@ int const address = 0x08;
 
 Port ports[20];
 
+int portsLen;
+
 uint8_t port  = 0x00;
 uint8_t len   = 0;
 
 int buffLen = 2;
+int dataLen = 0;
 
 char     sendBuff[32];
 float    buff[32];
 
 int      servoPos;
+
+int discoveryMode = 0;
 
 recvCommand commands[10];
 
@@ -88,7 +96,9 @@ int i = 0;
  ***/
 void setup() 
 {
- 
+
+
+   
   ports[0].type = SENSOR_TEMPERATURE;
   ports[0].port = TEMP;
 
@@ -97,6 +107,13 @@ void setup()
 
   ports[2].type = SENSOR_LIGHT;
   ports[2].port = LIGHT;
+
+  ports[3].type = ACTR_SERVO;
+  ports[3].port = SERVO;
+
+  
+
+  portsLen = arrayLength(ports);
   
   Serial.begin(9600);
 
@@ -126,104 +143,42 @@ void setup()
  ***/
 void loop() 
 {
-  delay(1000);
-
   readSensor();
+   delay(2000);
 
+   switch(port)
+   {
+      case SERVO:
+       Serial.print(""); // Uncomment this line, if it stops working
+        addCommand(port, dataLen - 1, data);
+        port = 0;
+      break;
+
+
+    }
+  
 
   switch(commands[i].port)
   {
-    /***  
-     *  Type : Sensor
-     *  Spec : Temp
-     ***/
-    case 0x00:           
-    break;
-
-
-    /***  
-     *  Type : Sensor
-     *  Spec : Humidity
-     ***/
-    case 0x0A:
-    break;
-
-
-    /***  
-     *  Type : Sensor
-     *  Spec : Light
-     ***/
-    case 0x0B:
-    break;
-
 
     /***  
      *  Type : Actuator
      *  Spec : Servo
      ***/
     case SERVO:
-    int pos, t;
-      Serial.print("\n\n\nDataLen: ");
-      Serial.println(commands[i].dataLen);
+      int pos, t;
       if ( commands[i].dataLen == 1 )
       {
-        Serial.print("\n\n\nPOSITION: ");
-        Serial.println(commands[i].data[0]);
-        Serial.println(commands[i].data[1]);
-        Serial.println(commands[i].data[2]);
-        Serial.println(commands[i].data[3]);
-        Serial.println(commands[i].data[4]);
-        Serial.println(commands[i].data[5]);
-        Serial.println(commands[i].data[6]);
-        Serial.println(commands[i].data[7]);
-        Serial.println(commands[i].data[8]);
-        Serial.println(commands[i].data[9]);
-        pos = commands[i].data[0];
         servoWrite(s1, servoPos);
-
-        Serial.print("\n\n\nTest: ");
-        Serial.println(pos);
-       
       } else if (commands[i].dataLen == 2) 
       {
         t = commands[i].data[1];
-        servoWrite(s1, pos, t);
+        servoWrite(s1, servoPos, t);
       } else
           break;
     break;
 
-
-    /***  
-     *  Type :      
-     *  Spec :
-     ***/
-    case 0x0D:
-    break;
-
-
-    /***  
-     *  Type :
-     *  Spec : 
-     ***/
-    case 0x0E:
-    break;
-
-
-    /***  
-     *  Type :
-     *  Spec : 
-     ***/
-    case 0x0F:
-    break;
-
-
-    /***
-     * Used for the Discovery Process, 
-     ***/
-     case DISCOVERY:
-        
-     break;
-
+    
     /***
      * Used for Debugging the connection
      ***/
@@ -233,10 +188,6 @@ void loop()
         Serial.println(Wire.read());
       }
     break;
-
-
-    default:
-      Serial.println("Invalid Port");
   }
 
   
@@ -248,13 +199,8 @@ void loop()
   {
     i = 0;  
   }
-
-   Serial.print("Ram Free: ");
-   Serial.println(freeMemory());
 }
 
-int iPorts;
-int discoveryFlag = 0;
 
 
 
@@ -271,10 +217,7 @@ void receiveEvent(int byteCount)
   
    int i = 0;
   
- //  if (discoveryFlag == 0)
-      port = Wire.read();
- //  else
- //    iPorts = Wire.read();
+   port = Wire.read();
       
 
    while (Wire.available())
@@ -282,22 +225,19 @@ void receiveEvent(int byteCount)
        data[i] = Wire.read();
        i += 1;
    }
-   i = 0;
+   dataLen = byteCount;
 
+   if (port == SERVO)
+      servoPos = data[0];
 
- //  Serial.print("\n\nRECEIVE EVENT ON PORT: \n\n");
- //  Serial.println(port);
-   
-   switch(port)
-   {
-      case SERVO:
-        addCommand(port, byteCount-1, data);
-        servoPos = data[0];
-      break;
-   }
+   if (port == DISCOVERY)
+      if (discoveryMode == 0)
+        discoveryMode = 1;
+      else
+        discoveryMode = 0;
+    
 }
 
-uint8_t portsLen = 0;
 
 
   
@@ -310,13 +250,28 @@ uint8_t portsLen = 0;
  ****/
 void requestEvent()
 {
-/*  
-  Serial.print("Port ");
-  Serial.println(port);
+  uint8_t buff2[2]; 
+   if(discoveryMode == 1)
+   {
+      discoveryMode = 2;
+      Wire.write(portsLen);
+      return 0;
+   } else if (discoveryMode == 2)
+   {
+      if (port == DISCOVERY)
+      {
+        discoveryMode = 0;
+        port = 0;
+        Wire.write( "", 32);
+        return 0;
+      }
+        
+      buff2[0] = ports[port].type;
+      buff2[1] = ports[port].port;
+      Wire.write(buff2,32);
+      return 0;
+   }
 
-  Serial.print("DF: ");
-  Serial.println(discoveryFlag);
-  */
   switch(port)
   {
     case TEMP:
@@ -337,27 +292,11 @@ void requestEvent()
     break;
 
     case DISCOVERY:
-      if (iPorts == DISCOVERY)
-      {
-        discoveryFlag = 0;
-        iPorts = 0;
-        break;
-      }
       
-      if(discoveryFlag == 0)
-      {
-        portsLen = arrayLength(ports);
-        Wire.write(portsLen);
-        discoveryFlag = 1;
-      } else if (discoveryFlag == 1)
-      {
-        sendBuff[0] = ports[iPorts].type;
-        sendBuff[1] = ports[iPorts].port;
-        
-        Wire.write(sendBuff ,32);
-      }
     break;
   }
+  
+
 }
 
 
@@ -373,16 +312,8 @@ void readSensor()
 {
   buff[TEMP]  = dht.readTemperature();
   buff[HUM]   = dht.readHumidity();
+  analogRead(0);
   buff[LIGHT] = analogRead(0);
-  /*
-  Serial.println("Read Sensors");
-  Serial.print("Temperatur: ");
-  Serial.println(buff[TEMP]);
-  Serial.print("Humidity: ");
-  Serial.println(buff[HUM]);
-  Serial.print("Light: ");
-  Serial.println(buff[LIGHT]);
-*/
 }
 
 
@@ -408,6 +339,7 @@ void setBuffer(int number, int len, int offset)
   {
     sendBuff[counter+2] = number >> 8 * i;
   }
+  
 }
 
 
@@ -458,15 +390,11 @@ boolean addCommand(uint8_t port, int dataLen, int data[])
  ***/
 void servoWrite(Servo &servo, int pos)
 {
-  Serial.println("Test - Servo 1");
-  Serial.print("Postion: ");
-  Serial.println(pos);
   int i;
   if( servo.read() > pos )
   { 
     for(i = servo.read(); i >= pos ; i--  )
     {
-        //Serial.println("Test - Servo 1 - s.read >");
       servo.write(i);
       delay(50);
     }
@@ -474,7 +402,6 @@ void servoWrite(Servo &servo, int pos)
   {
     for(i = servo.read(); i <= pos ; i++  )
     {
-      //Serial.println("Test - Servo 1 - s.read <");
       servo.write(i);
       delay(50);
     }  
@@ -497,12 +424,10 @@ void servoWrite(Servo &servo, int pos)
  ***/
 void servoWrite(Servo &s, int pos, int t)
 {
-  Serial.println("Test - Servo 2");
   int spe;
   int i;
   if( s.read() > pos )
   { 
-      Serial.println("Test - Servo 2");
     spe = (t / (s.read() - pos)) * 1000;
     for(i = s.read(); i >= pos ; i--  )
     {
@@ -511,7 +436,6 @@ void servoWrite(Servo &s, int pos, int t)
     }
   }else
   {
-      Serial.println("Test - Servo 2");
     spe =(t / (pos - s.read())) * 1000;
     for(i = s.read(); i <= pos ; i++  )
     {

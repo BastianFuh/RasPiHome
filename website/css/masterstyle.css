@@ -1,0 +1,128 @@
+*
+{
+  box-sizing          : border-box;
+  margin              : 0;
+  padding             : 0;
+  font-family         : sans-serif;
+}
+
+#content-wrapper
+{
+  height              : 1200px;
+  width               : 83%;
+
+  float               : right;
+
+}
+
+#sidenav
+{
+
+  width               : 17%;
+  height              : 100%;
+
+  position            : fixed;
+  float               : left;
+
+
+  background-color    : #393939;
+
+  box-shadow          : 0 0 1px 0 #333;
+}
+
+.nav-header
+{
+  width               : 100%;
+  height              : 165px;
+
+  background-color    : #aaa;
+
+}
+
+.nav-wrapper
+{
+    height            : 100%;
+    width             : 100%;
+
+    margin            : 0 auto;
+
+    background-color  : inherit;
+}
+
+
+.nav-content, .nav-dropdown
+{
+    min-height        : 65px;
+
+    width             : 100%;
+
+    padding           : 10px 12px;
+    margin            : 10px 0;
+
+    overflow          : hidden;
+
+    color             : white;
+    background-color  : inherit;
+}
+
+.nav-dropdown-content
+{
+  box-sizing          : content-box;
+
+  height              : 0px;
+  width               : inherit;
+
+  position            : relative;
+  left                : -12px;
+  margin              : 3px 0;
+
+  padding             : 0 24px;
+
+  overflow            : hidden;
+
+  background-color    : white;
+
+  transition          : all 0.60s;
+}
+
+.nav-dropdown:hover > .nav-dropdown-content
+{
+  height              : 100px;
+  padding             : 10px 24px;
+}
+
+.nav-dropdown-topic
+{
+  display             : block;
+
+  width               : 100%;
+
+  text-align          : center;
+  font-size           : 170%;
+  font-weight         : 600;
+
+  text-decoration     : none;
+  color               : white;
+}
+
+.nav-dropdown-content a
+{
+
+  display             : block;
+
+  margin              : 10px;
+
+  color               : #333;
+  text-decoration     : none;
+  font-size           : 18px;
+
+  transition          : all 0.4s;
+}
+
+.nav-dropdown-content a:hover
+{
+  font-size           : 20px;
+  font-weight         : 700;
+
+  color               : #666
+}

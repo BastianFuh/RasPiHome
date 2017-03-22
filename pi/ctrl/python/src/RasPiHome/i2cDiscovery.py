@@ -39,36 +39,35 @@ data = 0
 
 dirPath = "/opt/RasPiHome/dev/"
 filePath = "/opt/RasPiHome/dev/"
-
-shutil.rmtree("/opt/RasPiHome/dev")
+try:
+    shutil.rmtree("/opt/RasPiHome/dev")
+except OSError:
+    pass
 os.mkdir("/opt/RasPiHome/dev")
 
-for addr in range(0x08, 0x77):
+for addr in range(0x08, 0x78):
     try:
 
         data = i2c.readRawData(addr, libCom.PORT_DISCOVERY)
 
         if data[0] != 0:
-            time.sleep(1)
-
             os.mkdir(dirPath+str(hex(addr)))
 
             numSensor = data[0]
-
+            print "Found address " + hex(addr) + " with Ports"
             for i in range(0, numSensor):
 
                 data = i2c.readRawData(addr, i)
-                print data
 
                 jsonF = {"type": data[0],
                          "spec": data[0],
                          "conn": {
-                                "addr": addr,
-                                "port": data[1]
-                            }
+                             "addr": addr,
+                             "port": data[1]
+                         }
                          }
                 print jsonF
-                print filePath + str(hex(addr)) + "/" + str(data[1]) + ".json"
+                print "Saved in file: " + filePath + str(hex(addr)) + "/" + str(data[1]) + ".json"
                 with open(filePath + str(hex(addr)) + "/" + str(hex(data[1])) + ".json", 'w') as f:
                     json.dump(jsonF, f, indent=4)
 

@@ -30,7 +30,7 @@ def writeData(addr, port, val):
 
 
 """
-* readData
+* readSensor
 *
 * Reads data from a i2c Device
 * converts the number in to an integer/float and returns it
@@ -44,14 +44,15 @@ def writeData(addr, port, val):
 *
 """
 
+# !!! rename to readDigitalSensor, and create readAnalogSensor and readI2C !!!
 
-def readData(addr, port):
+
+def readSensor(addr, port):
     data = 0
     counter = 0
     recvBuffer 	= None
     try:
         recvBuffer = bus.read_i2c_block_data(addr, port)
-
         length = recvBuffer[0]
         while counter < length:
             data += (recvBuffer[counter + 2] << (8 * ((length - 1) - counter)))
@@ -80,7 +81,7 @@ def readRawData(addr, port):
     data = None
 
     try:
-     data = bus.read_i2c_block_data(addr, port)
+        data = bus.read_i2c_block_data(addr, port)
     except IOError:
         return -1
     return data
