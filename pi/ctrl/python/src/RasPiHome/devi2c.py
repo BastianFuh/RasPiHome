@@ -20,7 +20,6 @@ def setup():
 * value		- additional information in an array
 """
 
-
 def writeData(addr, port, val):
     try:
         bus.write_i2c_block_data(addr, port, val)

@@ -28,7 +28,7 @@ import json
 import os
 import shutil
 
-import i2cCom as i2c
+import devi2c as i2c
 from ..lib import libCom
 
 i2c.setup()

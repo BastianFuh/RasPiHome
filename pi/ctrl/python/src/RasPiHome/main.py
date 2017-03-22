@@ -6,7 +6,7 @@ import json
 import os
 import mysql.connector
 
-import i2cCom
+import devi2c
 
 
 dirPath = "/opt/RasPiHome/dev/"
@@ -39,7 +39,7 @@ while 1:
                     if js['type'] < 0x70:
                         addr  = js['conn']['addr']
                         port  = js['conn']['port']
-                        value = i2cCom.readSensor(addr, port)
+                        value = devi2c.readSensor(addr, port)
 
                         data = (str(addr), str(port), str(value))
 

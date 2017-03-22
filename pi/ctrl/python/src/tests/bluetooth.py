@@ -1,10 +1,10 @@
 import time
 
-from ..RasPiHome import bluetoothCom
+from ..RasPiHome import devbluetooth
 
-bluetoothCom.setup("HC-05-MASTER-1")
+devbluetooth.setup("")
 
 while 1:
-    bluetoothCom.send("Test")
+    devbluetooth.send("Test")
 
     time.sleep(1)

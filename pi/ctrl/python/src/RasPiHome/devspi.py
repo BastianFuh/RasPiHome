@@ -1,4 +1,4 @@
-import spidev
+import devspi
 import RPi.GPIO as GPIO
 
 # reads the data from a MCP3204 ic over the spi Interface
@@ -6,8 +6,8 @@ import RPi.GPIO as GPIO
 
 def read(channel):
 
-    spi = spidev.SpiDev()
-    spi.open(0,0)
+    spi = devspi.SpiDev()
+    spi.open(0, 0)
 
     try:
         #
