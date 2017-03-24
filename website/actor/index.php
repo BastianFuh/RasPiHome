@@ -3,39 +3,63 @@ include ("../scripts/design.php");
 
 include ("../scripts/intfInfo.php");
 
+error_reporting(E_ALL);
 
 $actuators = getActuators();
 
 $html = null;
+$path = "/var/www/html/scripts/lib/dev/";
+
 
 foreach($actuators as $actuator)
 {
-
-  $name = getName($actuator->{'spec'});
+  $spec = $actuator->{'spec'};
+  $name = getName($spec);
   $addr = $actuator->conn->{'addr'};
   $port = $actuator->conn->{'port'};
   $ctrl = null;
 
-  switch ($actuator->{'type'})
+  $filePath = $path . "0x". dechex($spec) . ".json";
+
+  if (file_exists($filePath))
   {
-    case ACTR_SERVO:
-      $ctrl = '
+    $file = fopen($filePath, 'r') or die();
+    $json = json_decode(fread($file, fstat($file)['size']));
+
+    $ctrl =  '
+        <tr style="height:0px">
+          <input type="hidden" value='. $addr .' name="addr"/>
+          <input type="hidden" value='. $port .' name="port"/>
+          <input type="hidden" value='. $spec .' name="type">
+        </tr>';
+    $counter = 1;
+
+    foreach($json->attr as $attr)
+    {
+      $ctrl .='
           <tr>
-            <input type="hidden" value='. $addr .' name="addr"/>
-            <input type="hidden" value='. $port .' name="port"/>
-            <td> Grad </td>
-            <td> <input class="box-form-input" type="number" value="0" name="value" /> </td>
-          </tr>
-          <tr>
-            <td colspan=2 >
-              <input class="box-form-input" type="submit" value="Absenden"/>
+            <td> '. $attr->{'name'} .' </td>
+            <td>
+              <input
+                  class="box-form-input"
+                  type='. $attr->{'type'} .'
+                  value="0"
+                  name="value'.$counter.'"
+                  min='.$attr->{'min'}.'
+                  max='.$attr->{'max'}.'
+              />
             </td>
           </tr>
-        ';
-    break;
-
-    default:
-      /* TO DO - Abfrage von mehreren Werten*/
+          ';
+      $counter++;
+    }
+    $ctrl .= '
+        <tr>
+          <td colspan=2 >
+            <input class="box-form-input" type="submit" value="Absenden"/>
+          </td>
+        </tr>
+      ';
   }
 
   $html .= '

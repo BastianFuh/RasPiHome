@@ -23,6 +23,10 @@ $nav = '
         <a href="/sensor/"> Anzeigen </a>
       </div>
     </div>
+    <div class="nav-content">
+      <a href="/webcam/" class="nav-dropdown-topic"> Web Cam </a>
+    </div>
+    </div>
   </div>
 </div>
 ';

@@ -5,7 +5,9 @@
 
   $dirPath    = "/opt/RasPiHome/dev/";
 
-
+  /**
+  * returns all of the found actuators
+  */
   function getActuators()
   {
     global $dirPath;
@@ -29,7 +31,7 @@
             $jsonFile = fopen($dirPath . "0x" . dechex($i) . "/" . $file, "r" ) or die();
             $json = json_decode(fread($jsonFile, fstat($jsonFile)['size']));
 
-            if ($json->{'type'} >= 0x70)
+            if ($json->{'spec'} >= 0x70)
             {
               $actors[] = $json;
             }
@@ -62,10 +64,10 @@
         {
           if (strcmp($file, "." ) != 0 && strcmp($file, "..") != 0)
           {
-            $jsonFile = fopen($dirPath . "0x" . dechex($i) . "/" . $file, "r" ) or die();
-            $json = json_decode(fread($jsonFile, fstat($jsonFile)['size']));
+            $Jfile = fopen($dirPath . "0x" . dechex($i) . "/" . $file, "r" ) or die();
+            $json = json_decode(fread($Jfile, fstat($Jfile)['size']));
 
-            if ($json->{'type'} < 0x70)
+            if ($json->{'spec'} < 0x70)
             {
               $sensors[] = $json;
             }

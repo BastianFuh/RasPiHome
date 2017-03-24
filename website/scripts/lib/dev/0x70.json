@@ -1,0 +1,13 @@
+{
+  "spec" : 112,
+  "type" : "Actuator",
+  "name" : "Servo",
+  "attr" : [
+    {
+      "name" : "Grad",
+      "type" : "number",
+      "min"  :   0,
+      "max"  : 180
+    }
+  ]
+}
