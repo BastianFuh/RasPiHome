@@ -6,9 +6,8 @@ import math
 
 ## Wrapper for the python smbus module.
 
-def begin():
-    global bus
-    bus = smbus.SMBus(1)
+
+bus = smbus.SMBus(1)
 
 
 ## writes data to a specified slave

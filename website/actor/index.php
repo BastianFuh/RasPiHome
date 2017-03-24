@@ -10,11 +10,12 @@ $actuators = getActuators();
 $html = null;
 $path = "/var/www/html/scripts/lib/dev/";
 
-
+$actuatorCounter = 0;
 foreach($actuators as $actuator)
 {
+  $actuatorCounter++;
   $spec = $actuator->{'spec'};
-  $name = getName($spec);
+  $name = "";
   $addr = $actuator->conn->{'addr'};
   $port = $actuator->conn->{'port'};
   $ctrl = null;
@@ -25,6 +26,8 @@ foreach($actuators as $actuator)
   {
     $file = fopen($filePath, 'r') or die();
     $json = json_decode(fread($file, fstat($file)['size']));
+
+    $name = $json->{'name'};
 
     $ctrl =  '
         <tr style="height:0px">
@@ -82,6 +85,11 @@ foreach($actuators as $actuator)
           </tr>
           '. $ctrl .'
       </table>
+    </form method="post" action="profil.php">
+    <form class=box-footer >
+      <input type="hidden" value='.$addr.' name="addr">
+      <input type="hidden" value='.$port.' name="port">
+      <input type="submit" value="Profileinstellung" />
     </form>
   </div>
 
@@ -99,10 +107,18 @@ foreach($actuators as $actuator)
     <link rel="stylesheet" href="/css/boxLayout.css">
   </head>
   <body>
-
     <div id="main-wrapper">
       <?php echo $nav; ?>
       <div id="content-wrapper">
+        <div class="content-header">
+          <h1 class="content-topic"> Aktoren </h1>
+          <div class="content-header-info">
+            <div class="content-header-box">
+              <p class="content-header-box-topic"> Angeschlossene Aktoren </p>
+              <p> <?php echo $actuatorCounter ?>  </p> <!--(^-^)-->
+            </div>
+          </div>
+        </div>
         <div class="box-wrapper">
           <?php echo $html; ?>
         </div>

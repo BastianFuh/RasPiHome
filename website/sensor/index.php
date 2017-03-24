@@ -8,9 +8,12 @@ include ("../connection.php");
 $sensors = getSensors();
 
 $html = null;
+$sensorCounter = 0;
 
 foreach($sensors as $sensor)
 {
+  $sensorCounter++;
+
   $name = getName($sensor->{'spec'});
   $addr = $sensor->conn->{'addr'};
   $port = $sensor->conn->{'port'};
@@ -65,6 +68,20 @@ foreach($sensors as $sensor)
     <div id="main-wrapper">
       <?php echo $nav; ?>
       <div id="content-wrapper">
+        <div class="content-header">
+          <h1 class="content-topic"> Sensoren </h1>
+          <div class="content-header-info">
+            <form class="content-header-box" method="post" action="sensor.php">
+              <label class="content-header-box-topic"> Abfragerate </label>
+              <input type="number" min=1 placeholder="Sekunden" name="interval" />
+              <input type="submit" value="Ändern">
+            </form>
+            <div class="content-header-box">
+              <p class="content-header-box-topic"> Angeschlossene Sensoren </p>
+              <p> <?php echo $sensorCounter ?>  </p> <!--(^-^)-->
+            </div>
+          </div>
+        </div>
         <div class="box-wrapper">
           <?php echo $html; ?>
         </div>

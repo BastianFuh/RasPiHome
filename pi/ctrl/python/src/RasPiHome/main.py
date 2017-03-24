@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import time
+import sys
 
 import json
 import os
@@ -36,10 +37,10 @@ while 1:
             for fileName in dirContent:
                 with open(dirPath + subDir + fileName, 'r') as f:
                     js = json.load(f)
-                    if js['type'] < 0x70:
+                    if js['spec'] < 0x70:
                         addr  = js['conn']['addr']
                         port  = js['conn']['port']
-                        value = devi2c.readSensor(addr, port)
+                        value = devi2c.read_sensor(addr, port)
 
                         data = (str(addr), str(port), str(value))
 
@@ -52,4 +53,4 @@ while 1:
         except IOError:
             pass
 
-    time.sleep(300)
+    time.sleep(int(sys.argv[1]))
