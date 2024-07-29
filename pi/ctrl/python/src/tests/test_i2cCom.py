@@ -1,7 +1,6 @@
-from ..RasPiHome import i2cCom as i2c
-from ..lib import libCom
-
 import time
+
+from ..RasPiHome import devi2c as i2c
 
 
 i2c.setup()

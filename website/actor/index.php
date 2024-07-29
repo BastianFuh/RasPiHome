@@ -3,39 +3,66 @@ include ("../scripts/design.php");
 
 include ("../scripts/intfInfo.php");
 
+error_reporting(E_ALL);
 
 $actuators = getActuators();
 
 $html = null;
+$path = "/var/www/html/scripts/lib/dev/";
 
+$actuatorCounter = 0;
 foreach($actuators as $actuator)
 {
-
-  $name = getName($actuator->{'spec'});
+  $actuatorCounter++;
+  $spec = $actuator->{'spec'};
+  $name = "";
   $addr = $actuator->conn->{'addr'};
   $port = $actuator->conn->{'port'};
   $ctrl = null;
 
-  switch ($actuator->{'type'})
+  $filePath = $path . "0x". dechex($spec) . ".json";
+
+  if (file_exists($filePath))
   {
-    case ACTR_SERVO:
-      $ctrl = '
+    $file = fopen($filePath, 'r') or die();
+    $json = json_decode(fread($file, fstat($file)['size']));
+
+    $name = $json->{'name'};
+
+    $ctrl =  '
+        <tr style="height:0px">
+          <input type="hidden" value='. $addr .' name="addr"/>
+          <input type="hidden" value='. $port .' name="port"/>
+          <input type="hidden" value='. $spec .' name="type">
+        </tr>';
+    $counter = 1;
+
+    foreach($json->attr as $attr)
+    {
+      $ctrl .='
           <tr>
-            <input type="hidden" value='. $addr .' name="addr"/>
-            <input type="hidden" value='. $port .' name="port"/>
-            <td> Grad </td>
-            <td> <input class="box-form-input" type="number" value="0" name="value" /> </td>
-          </tr>
-          <tr>
-            <td colspan=2 >
-              <input class="box-form-input" type="submit" value="Absenden"/>
+            <td> '. $attr->{'name'} .' </td>
+            <td>
+              <input
+                  class="box-form-input"
+                  type='. $attr->{'type'} .'
+                  value="0"
+                  name="value'.$counter.'"
+                  min='.$attr->{'min'}.'
+                  max='.$attr->{'max'}.'
+              />
             </td>
           </tr>
-        ';
-    break;
-
-    default:
-      /* TO DO - Abfrage von mehreren Werten*/
+          ';
+      $counter++;
+    }
+    $ctrl .= '
+        <tr>
+          <td colspan=2 >
+            <input class="box-form-input" type="submit" value="Absenden"/>
+          </td>
+        </tr>
+      ';
   }
 
   $html .= '
@@ -58,6 +85,11 @@ foreach($actuators as $actuator)
           </tr>
           '. $ctrl .'
       </table>
+    </form method="post" action="profil.php">
+    <form class=box-footer >
+      <input type="hidden" value='.$addr.' name="addr">
+      <input type="hidden" value='.$port.' name="port">
+      <input type="submit" value="Profileinstellung" />
     </form>
   </div>
 
@@ -75,10 +107,18 @@ foreach($actuators as $actuator)
     <link rel="stylesheet" href="/css/boxLayout.css">
   </head>
   <body>
-
     <div id="main-wrapper">
       <?php echo $nav; ?>
       <div id="content-wrapper">
+        <div class="content-header">
+          <h1 class="content-topic"> Aktoren </h1>
+          <div class="content-header-info">
+            <div class="content-header-box">
+              <p class="content-header-box-topic"> Angeschlossene Aktoren </p>
+              <p> <?php echo $actuatorCounter ?>  </p> <!--(^-^)-->
+            </div>
+          </div>
+        </div>
         <div class="box-wrapper">
           <?php echo $html; ?>
         </div>

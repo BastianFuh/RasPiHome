@@ -1,0 +1,11 @@
+{
+  "spec" : 115,
+  "type" : "Actuator",
+  "name" : "RGB LED",
+  "attr" : [
+    {
+      "name" : "Farbe",
+      "type" : "color",
+    }
+  ]
+}

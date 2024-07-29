@@ -1,5 +1,3 @@
-
-#include <MemoryFree.h>
 #include <Wire.h>
 #include <DHT.h>
 #include <Servo.h>
@@ -48,6 +46,11 @@
 #define DEBUG 0xFE
 #define DISCOVERY 0xFF
 
+#define OTHER 0x00
+#define DIREKT 0x01
+#define BLUETOOTH 0x02
+#define I2C 0x03
+#define SPI 0x04
 
 typedef struct{
   uint8_t  port;
@@ -56,7 +59,8 @@ typedef struct{
 } recvCommand;
 
 typedef struct{
-  uint8_t type;
+  uint8_t conn_type;
+  uint8_t spec;
   uint8_t port;
 } Port;
 
@@ -98,18 +102,21 @@ void setup()
 {
 
 
-   
-  ports[0].type = SENSOR_TEMPERATURE;
-  ports[0].port = TEMP;
+  ports[0].conn_type  = DIREKT;  
+  ports[0].spec       = SENSOR_TEMPERATURE;
+  ports[0].port       = TEMP;
 
-  ports[1].type = SENSOR_HUMIDITY;
-  ports[1].port = HUM;
+  ports[0].conn_type  = DIREKT;
+  ports[1].spec       = SENSOR_HUMIDITY;
+  ports[1].port       = HUM;
 
-  ports[2].type = SENSOR_LIGHT;
-  ports[2].port = LIGHT;
+  ports[0].conn_type  = DIREKT;
+  ports[2].spec       = SENSOR_LIGHT;
+  ports[2].port       = LIGHT;
 
-  ports[3].type = ACTR_SERVO;
-  ports[3].port = SERVO;
+  ports[0].conn_type  = DIREKT;
+  ports[3].spec       = ACTR_SERVO;
+  ports[3].port       = SERVO;
 
   
 
@@ -166,6 +173,7 @@ void loop()
      *  Spec : Servo
      ***/
     case SERVO:
+
       int pos, t;
       if ( commands[i].dataLen == 1 )
       {
@@ -250,7 +258,7 @@ void receiveEvent(int byteCount)
  ****/
 void requestEvent()
 {
-  uint8_t buff2[2]; 
+  uint8_t buff2[32]; 
    if(discoveryMode == 1)
    {
       discoveryMode = 2;
@@ -265,9 +273,9 @@ void requestEvent()
         Wire.write( "", 32);
         return 0;
       }
-        
-      buff2[0] = ports[port].type;
-      buff2[1] = ports[port].port;
+      buff2[0] = ports[port].conn_type;
+      buff2[1] = ports[port].spec;
+      buff2[2] = ports[port].port;
       Wire.write(buff2,32);
       return 0;
    }
